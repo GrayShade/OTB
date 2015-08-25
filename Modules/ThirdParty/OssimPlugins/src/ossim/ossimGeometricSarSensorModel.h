@@ -54,6 +54,7 @@ public:
 //   SensorParams* theSensorParams;
 //   SensorParams2 theSensorParams;
 
+
    void finalize(const ossimKeywordlist& /*kwl*/)
    {
 //       ossimKeywordlist ppKwl;

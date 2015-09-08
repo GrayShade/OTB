@@ -44,6 +44,8 @@
 
 #include "itksys/SystemTools.hxx"
 
+#include "otbStringUtils.h"
+
 #include <boost/foreach.hpp>
 #include <boost/tokenizer.hpp>
 
@@ -823,13 +825,18 @@ ImageFileWriter<TInputImage>
     const std::string comment("// !OSSIM. Created from itk::MetadataDictionary.");
     geomFile << comment << std::endl;
     std::vector<std::string> mkeys = dict.GetKeys();
-
     std::vector<std::string>::const_iterator itKey = mkeys.begin();
+    const std::string defValue = "TRUE";
     while (itKey != mkeys.end() )
       {
+      std::string metadataString;
+      itk::ExposeMetaData<std::string>(dict, (*itKey), metadataString);
+      std::string mkey;
       std::string mvalue;
-      itk::ExposeMetaData<std::string>(dict, (*itKey), mvalue);
-      geomFile <<  (*itKey)  << ":" << "  \"" << mvalue << "\"" << std::endl;
+      Utils::SplitStringToSingleKeyValue(metadataString, mkey, mvalue, defValue);
+      //boost::replace_all(mvalue, "\r\n", "");
+      if ( !mkey.empty() && !mvalue.empty() )
+        geomFile <<  mkey  << ":" << "  \"" << mvalue << "\"" << std::endl;
       ++itKey;
       }
     geomFile.close();

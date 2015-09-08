@@ -35,6 +35,10 @@
 #include "otbMetaDataKey.h"
 
 #include "otbMacro.h"
+#include <sstream>
+#include <fstream>
+
+#include "otbStringUtils.h"
 
 
 namespace otb
@@ -316,7 +320,7 @@ ImageFileReader<TOutputImage, ConvertPixelTraits>
   bool lVectorImage = false;
   if (strcmp(output->GetNameOfClass(), "VectorImage") == 0)
     lVectorImage= true;
-  
+
   this->m_ImageIO->SetOutputImagePixelType(PixelIsComplex(dummy),lVectorImage);
 
   // Pass the dataset number (used for hdf files for example)
@@ -439,6 +443,26 @@ ImageFileReader<TOutputImage, ConvertPixelTraits>
     {
       itk::EncapsulateMetaData<ImageKeywordlist>(dict,
                                                  MetaDataKey::OSSIMKeywordlistKey, otb_kwl);
+    }
+  else
+    {
+    /** hmmm. empty keywordlist huh?. the geom file cannot be loaded with a
+     * correct ossim model. try reading into itk::MetadataDictonary. Now
+     * everything is stored as std::string */
+    const std::string baseName = itksys::SystemTools::GetFilenameWithoutExtension(this->GetFileName());
+    const std::string geomFileName = baseName + ".geom";
+    std::ifstream geomFile(geomFileName.c_str());
+    std::string line;
+    const std::string defValue = "TRUE";
+    while (std::getline(geomFile, line))
+      {
+      std::string mkey;
+      std::string mvalue;
+      Utils::SplitStringToSingleKeyValue(line, mkey, mvalue, defValue, "=");
+      if ( !mkey.empty() && !mvalue.empty() )
+        itk::EncapsulateMetaData<std::string>(dict, mkey, mvalue);
+      }
+    geomFile.close();
     }
   /*else
     {
@@ -670,15 +694,15 @@ ImageFileReader<TOutputImage, ConvertPixelTraits>
 
   return this->m_ImageIO->GetOverviewsCount();
  }
- 
- 
+
+
 template <class TOutputImage, class ConvertPixelTraits>
 std::vector<std::string>
 ImageFileReader<TOutputImage, ConvertPixelTraits>
 ::GetOverviewsInfo()
  {
   this->UpdateOutputInformation();
-  
+
   return this->m_ImageIO->GetOverviewsInfo();
  }
 

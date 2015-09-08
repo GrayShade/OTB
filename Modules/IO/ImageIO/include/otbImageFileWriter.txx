@@ -42,6 +42,8 @@
 #include "otbRAMDrivenTiledStreamingManager.h"
 #include "otbRAMDrivenAdaptativeStreamingManager.h"
 
+#include "itksys/SystemTools.hxx"
+
 #include <boost/foreach.hpp>
 #include <boost/tokenizer.hpp>
 
@@ -784,7 +786,53 @@ ImageFileWriter<TInputImage>
     ImageKeywordlist otb_kwl;
     itk::MetaDataDictionary dict = this->GetInput()->GetMetaDataDictionary();
     itk::ExposeMetaData<ImageKeywordlist>(dict, MetaDataKey::OSSIMKeywordlistKey, otb_kwl);
+    //If keywordlist is not empty, write the otb_kwl to geom file.
+    //Else, write itk::MetaDataDictionary to .geom file.
+    //This change was introduced as a part of supporting CosmoSkymed
+    //Product. The product comes in hdf5 format and all metadata are handled
+    //well by GDAL. So we decided to use those directly rather than going for a
+    //hdf5 file again in OssimPlugins via ossim sensor model class.
+
+  if( otb_kwl.GetSize() != 0 )
+    {
     WriteGeometry(otb_kwl, this->GetFileName());
+    }
+  else
+    {
+    CreateGeomFileFromMetadataDictionary(dict, this->GetFileName());
+    }
+  }
+}
+
+template <class TInputImage>
+void
+ImageFileWriter<TInputImage>
+::CreateGeomFileFromMetadataDictionary(const itk::MetaDataDictionary &dict, const std::string filename) const
+{
+  //const  std::string pathName = itksys::SystemTools::GetFilenamePath(filename);
+  const std::string baseName = itksys::SystemTools::GetFilenameWithoutExtension(filename);
+  const std::string geomFileName = baseName + ".geom";
+  std::ofstream geomFile(geomFileName.c_str());
+  if (!geomFile)
+    {
+    itkWarningMacro(<<  "ossimKeywordlist::write, Error opening file:  "  << geomFileName << std::endl);
+    return;
+    }
+  else
+    {
+    const std::string comment("// !OSSIM. Created from itk::MetadataDictionary.");
+    geomFile << comment << std::endl;
+    std::vector<std::string> mkeys = dict.GetKeys();
+
+    std::vector<std::string>::const_iterator itKey = mkeys.begin();
+    while (itKey != mkeys.end() )
+      {
+      std::string mvalue;
+      itk::ExposeMetaData<std::string>(dict, (*itKey), mvalue);
+      geomFile <<  (*itKey)  << ":" << "  \"" << mvalue << "\"" << std::endl;
+      ++itKey;
+      }
+    geomFile.close();
     }
 }
 

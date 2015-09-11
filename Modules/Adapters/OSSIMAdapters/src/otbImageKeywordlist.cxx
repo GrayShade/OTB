@@ -383,7 +383,7 @@ ReadGeometryFromGEOMFile(const std::string& filename)
         a valid ossim sensor model. */
      if( firstLine.find( "// !OSSIM") != std::string::npos)
      {
-        std::cerr << ".geom file not created by OSSIM. Returning empty kwl" <<  filename << std::endl;
+        otbMsgDevMacro( << ".geom file not created by OSSIM. Returning empty kwl" <<  filename );
         testFile.close();
         return otb_kwl;
      }

@@ -26,7 +26,6 @@
 #include "ossimTerraSarModel.h"
 //#include "ossimCosmoSkymedModel.h"
 #include "ossimRadarSat2Model.h"
-#include "ossimSentinel1Model.h"
 #include "ossimErsSarModel.h"
 #include "ossimAlosPalsarModel.h"
 #include "ossimPleiadesModel.h"
@@ -106,25 +105,6 @@ ossimProjection* ossimPluginProjectionFactory::createProjection(
    }
 
    /* Start testing radar sensor models. The order listed below is "tricky" */
-
-   // Sentinel1
-   if ( !projection )
-   {
-      if(traceDebug())
-      {
-         ossimNotify(ossimNotifyLevel_DEBUG) << MODULE << " DEBUG: testing ossimSentinel1Model" << std::endl;
-      }
-
-      ossimRefPtr<ossimSentinel1Model> model = new ossimSentinel1Model();
-      if ( model->open(filename) )
-      {
-         projection = model.get();
-      }
-      else
-      {
-         model = 0;
-      }
-   }
 
    // RadarSat2
    if ( !projection )

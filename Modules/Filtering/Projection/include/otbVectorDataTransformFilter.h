@@ -20,7 +20,6 @@
 
 #include "otbVectorDataToVectorDataFilter.h"
 #include "itkTransform.h"
-#include "itkTimeProbe.h"
 #include "otbImageKeywordlist.h"
 #include "otbVectorData.h"
 
@@ -108,8 +107,6 @@ protected:
   PolygonListPointerType ProcessPolygonList(PolygonListPointerType polygonList) const;
 
   void GenerateData(void);
-
-  itk::TimeProbe    m_TimeProbe;
 
 private:
   VectorDataTransformFilter(const Self&); //purposely not implemented

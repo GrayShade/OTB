@@ -26,6 +26,7 @@
 #include "otbVectorDataTransformFilter.h"
 #include "itkAffineTransform.h"
 
+#include "itkTimeProbe.h"
 #include "otbMacro.h"
 #include <cassert>
 
@@ -74,8 +75,8 @@ PersistentImageToOGRLayerSegmentationFilter<TImageType, TSegmentationFilter>
 {
   otbMsgDebugMacro(<< "tile number : " << m_TileNumber);
   ++m_TileNumber;
-  m_TileTimeProbe.Reset();
-  m_TileTimeProbe.Start();
+  itk::TimeProbe tileChrono;
+  tileChrono.Start();
 
   // Apply an ExtractImageFilter to avoid problems with filters asking for the LargestPossibleRegion
   typedef itk::ExtractImageFilter<InputImageType, InputImageType> ExtractImageFilterType;
@@ -92,16 +93,16 @@ PersistentImageToOGRLayerSegmentationFilter<TImageType, TSegmentationFilter>
   typename LabelImageToOGRDataSourceFilterType::Pointer labelImageToOGRDataFilter =
                                               LabelImageToOGRDataSourceFilterType::New();
 
-  m_StepTimeProbe.Reset();
-  m_StepTimeProbe.Start();
+  itk::TimeProbe chrono1;
+  chrono1.Start();
   m_SegmentationFilter->SetInput(extract->GetOutput());
   m_SegmentationFilter->UpdateLargestPossibleRegion();
 
-  m_StepTimeProbe.Stop();
-  otbMsgDebugMacro(<<"segmentation took " << m_StepTimeProbe.GetTotal() << " sec");
+  chrono1.Stop();
+  otbMsgDebugMacro(<<"segmentation took " << chrono1.GetTotal() << " sec");
 
-  m_StepTimeProbe.Reset();
-  m_StepTimeProbe.Start();
+  itk::TimeProbe chrono2;
+  chrono2.Start();
   typename LabelImageType::ConstPointer inputMask = this->GetInputMask();
   if (!inputMask.IsNull())
   {
@@ -122,12 +123,12 @@ PersistentImageToOGRLayerSegmentationFilter<TImageType, TSegmentationFilter>
   labelImageToOGRDataFilter->SetUse8Connected(m_Use8Connected);
   labelImageToOGRDataFilter->Update();
 
-  m_StepTimeProbe.Stop();
-  otbMsgDebugMacro(<< "vectorization took " << m_StepTimeProbe.GetTotal() << " sec");
+  chrono2.Stop();
+  otbMsgDebugMacro(<< "vectorization took " << chrono2.GetTotal() << " sec");
 
   //Relabeling & simplication of geometries & filtering small objects
-  m_StepTimeProbe.Reset();
-  m_StepTimeProbe.Start();
+  itk::TimeProbe chrono3;
+  chrono3.Start();
   OGRDataSourcePointerType tmpDS = const_cast<OGRDataSourceType *>(labelImageToOGRDataFilter->GetOutput());
   OGRLayerType tmpLayer = tmpDS->GetLayer(0);
 
@@ -167,10 +168,8 @@ PersistentImageToOGRLayerSegmentationFilter<TImageType, TSegmentationFilter>
         }
      }
   }
-  m_StepTimeProbe.Stop();
-  otbMsgDebugMacro(<< "relabeling, filtering small objects and simplifying geometries took " << m_StepTimeProbe.GetTotal() << " sec");
-
-  m_TileTimeProbe.Stop();
+  chrono3.Stop();
+  otbMsgDebugMacro(<< "relabeling, filtering small objects and simplifying geometries took " << chrono3.GetTotal() << " sec");
 
   return tmpDS;
 }

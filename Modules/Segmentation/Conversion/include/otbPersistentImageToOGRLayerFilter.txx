@@ -22,6 +22,7 @@
 #define __otbPersistentImageToOGRLayerFilter_txx
 
 #include "otbPersistentImageToOGRLayerFilter.h"
+#include "itkTimeProbe.h"
 #include <boost/foreach.hpp>
 #include <stdio.h>
 #include "otbMacro.h"
@@ -141,8 +142,8 @@ PersistentImageToOGRLayerFilter<TImage>
      }
 
   //Copy features contained in the memory layer (srcLayer) in the output layer
-  m_TimeProbe.Reset();
-  m_TimeProbe.Start();
+  itk::TimeProbe chrono;
+  chrono.Start();
   m_OGRLayer.ogr().StartTransaction();
   OGRLayerType::const_iterator featIt = srcLayer.begin();
   for(; featIt!=srcLayer.end(); ++featIt)
@@ -153,8 +154,8 @@ PersistentImageToOGRLayerFilter<TImage>
   }
 
   m_OGRLayer.ogr().CommitTransaction();
-  m_TimeProbe.Stop();
-  otbMsgDebugMacro(<< "write ogr tile took " << m_TimeProbe.GetTotal() << " sec");
+  chrono.Stop();
+  otbMsgDebugMacro(<< "write ogr tile took " << chrono.GetTotal() << " sec");
 
 }
 

@@ -26,7 +26,6 @@
  * transformations.
  */
 
-#include "itkTimeProbe.h"
 #include "otbGeometriesSource.h"
 #include <map>
 #include <boost/mpl/assert.hpp>
@@ -167,10 +166,6 @@ private:
   virtual void                     DoFinalizeInitialisation() {}
   //@}
   friend struct otb::internal::ProcessVisitor;
-
-protected:
-  /** Used to measure operation timings */
-  itk::TimeProbe    m_TimeProbe;
   };
 
 /**\ingroup GeometriesFilters

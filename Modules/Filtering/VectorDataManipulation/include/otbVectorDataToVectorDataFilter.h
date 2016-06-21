@@ -19,7 +19,6 @@
 #define __otbVectorDataToVectorDataFilter_h
 
 #include "otbVectorDataSource.h"
-#include "itkTimeProbe.h"
 
 namespace otb
 {
@@ -119,8 +118,6 @@ protected:
 
   /**PrintSelf method */
   virtual void PrintSelf(std::ostream& os, itk::Indent indent) const;
-
-  itk::TimeProbe    m_TimeProbe;
 
 private:
   VectorDataToVectorDataFilter(const Self &); //purposely not implemented

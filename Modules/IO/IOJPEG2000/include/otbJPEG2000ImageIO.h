@@ -20,7 +20,6 @@
 
 #include "otbImageIOBase.h"
 #include "itkMultiThreader.h"
-#include "itkTimeProbe.h"
 
 #include <boost/shared_ptr.hpp>
 
@@ -73,12 +72,12 @@ public:
 
   /** Get description about overviews available into the file specified */
   virtual std::vector<std::string> GetOverviewsInfo();
-
+  
   /** Provide hist about the output container to deal with complex pixel
-   *  type (Not used here) */
-  virtual void SetOutputImagePixelType( bool itkNotUsed(isComplexInternalPixelType),
+   *  type (Not used here) */ 
+  virtual void SetOutputImagePixelType( bool itkNotUsed(isComplexInternalPixelType), 
                                         bool itkNotUsed(isVectorImage)){}
-
+  
   /** Get number of available overviews in the jpeg2000 file
    *  ( if return = 0 => no overviews available because only one resolution
    *  is encoded in the file) */
@@ -120,10 +119,10 @@ public:
 
   itkSetMacro(CacheSizeInByte, unsigned int);
   itkGetMacro(CacheSizeInByte, unsigned int);
+  
 
-
-
-
+  
+  
 protected:
   /** Constructor.*/
   JPEG2000ImageIO();
@@ -136,8 +135,6 @@ protected:
 
   ReaderVectorType                     m_InternalReaders;
   boost::shared_ptr<JPEG2000TileCache> m_TileCache;
-
-  itk::TimeProbe                       m_TimeProbe;
 
 private:
   JPEG2000ImageIO(const Self &); //purposely not implemented

@@ -27,7 +27,6 @@
 #include "otbPersistentImageToOGRLayerFilter.h"
 #include "otbRelabelComponentImageFilter.h"
 #include "itkMultiplyImageFilter.h"
-#include "itkTimeProbe.h"
 #include "otbLabeledOutputAccessor.h"
 
 #include "otbMeanShiftSmoothingImageFilter.h"
@@ -146,8 +145,6 @@ protected:
 
   virtual ~PersistentImageToOGRLayerSegmentationFilter();
 
-  itk::TimeProbe    m_TileTimeProbe;
-  itk::TimeProbe    m_StepTimeProbe;
 
 private:
   PersistentImageToOGRLayerSegmentationFilter(const Self &); //purposely not implemented

@@ -28,6 +28,7 @@
 #include "otbMacro.h"
 
 #include "itkProgressReporter.h"
+#include "itkTimeProbe.h"
 
 namespace otb
 {
@@ -106,12 +107,12 @@ VectorDataExtractROI<TVectorData>
   m_Kept  = 0;
 
   // Start recursive processing
-  m_TimeProbe.Reset();
-  m_TimeProbe.Start();
+  itk::TimeProbe chrono;
+  chrono.Start();
   ProcessNode(inputRoot, outputRoot);
-  m_TimeProbe.Stop();
+  chrono.Stop();
   otbMsgDevMacro(
-    << "VectorDataExtractROI: " << m_Kept << " Features processed in " << m_TimeProbe.GetMean() << " seconds.");
+    << "VectorDataExtractROI: " << m_Kept << " Features processed in " << chrono.GetMean() << " seconds.");
 } /*End GenerateData()*/
 
 template <class TVectorData>

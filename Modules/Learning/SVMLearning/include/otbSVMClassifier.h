@@ -24,7 +24,6 @@
 #include "otbSVMModel.h"
 #include "itkVectorImage.h"
 #include "itkListSample.h"
-#include "itkTimeProbe.h"
 
 namespace otb
 {
@@ -116,8 +115,6 @@ protected:
   /** Starts the classification process */
   void GenerateData();
   virtual void DoClassification();
-
-  itk::TimeProbe    m_TimeProbe;
 
 private:
 

@@ -21,7 +21,6 @@
 #include <vector>
 
 #include "otbVectorData.h"
-#include "itkTimeProbe.h"
 
 class OGRDataSource;
 class OGRGeometryCollection;
@@ -103,8 +102,6 @@ private:
   void ConvertGeometryToLineNode(const OGRGeometry * ogrGeometry, DataNodePointerType node) const;
 
   void ConvertGeometryToPolygonNode(const OGRGeometry * ogrGeometry, DataNodePointerType node) const;
-
-  itk::TimeProbe                                m_TimeProbe;
 
 }; // end class OGRIOHelper
 

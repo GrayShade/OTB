@@ -198,6 +198,7 @@ void OGRIOHelper
     if (geometry == NULL)
       {
       OGRFeature::DestroyFeature(feature);
+      chrono.Stop();
       ++counter;
       continue;
       }

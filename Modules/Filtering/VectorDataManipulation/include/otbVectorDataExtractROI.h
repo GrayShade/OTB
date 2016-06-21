@@ -23,6 +23,7 @@
 #include "otbDEMHandler.h"
 #include "itkMacro.h"
 #include "itkPreOrderTreeIterator.h"
+#include "itkTimeProbe.h"
 
 namespace otb
 {
@@ -129,6 +130,8 @@ protected:
 
   virtual void ProcessNode(InternalTreeNodeType * source, InternalTreeNodeType * destination);
   using Superclass::ProcessNode;
+
+  itk::TimeProbe    m_TimeProbe;
 
 private:
   VectorDataExtractROI(const Self &); //purposely not implemented

@@ -22,7 +22,6 @@
 #include "itkProgressReporter.h"
 #include "itkMetaDataObject.h"
 #include "otbMetaDataKey.h"
-#include "itkTimeProbe.h"
 
 namespace otb
 {
@@ -355,11 +354,11 @@ VectorDataProjectionFilter<TInputVectorData, TOutputVectorData>
   tree->SetRoot(outputRoot);
 
   // Start recursive processing
-  itk::TimeProbe chrono;
-  chrono.Start();
+  m_TimeProbe.Reset();
+  m_TimeProbe.Start();
   this->ProcessNode(inputRoot, outputRoot);
-  chrono.Stop();
-  otbMsgDevMacro(<< "VectoDataProjectionFilter: features Processed in " << chrono.GetMean() << " seconds.");
+  m_TimeProbe.Stop();
+  otbMsgDevMacro(<< "VectorDataProjectionFilter: features Processed in " << m_TimeProbe.GetMean() << " seconds.");
 }
 
 } // end namespace otb

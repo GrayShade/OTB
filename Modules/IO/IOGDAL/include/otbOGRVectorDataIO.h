@@ -22,6 +22,7 @@
 
 #include "otbVectorDataIOBase.h"
 #include "otbVectorData.h"
+#include "itkTimeProbe.h"
 
 class OGRDataSource;
 
@@ -109,6 +110,8 @@ protected:
   /*   virtual void InternalReadVectorDataInformation(){}; */
 
   virtual void PrintSelf(std::ostream& os, itk::Indent indent) const;
+
+  itk::TimeProbe    m_TimeProbe;
 
 private:
   OGRVectorDataIO(const Self &); //purposely not implemented

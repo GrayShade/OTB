@@ -26,6 +26,8 @@
 #include "otbLabelImageToOGRDataSourceFilter.h"
 
 #include "itkMacro.h"
+#include "itkTimeProbe.h"
+
 #include <string>
 
 namespace otb
@@ -127,6 +129,7 @@ protected:
 
   virtual void GenerateData();
 
+  itk::TimeProbe    m_TimeProbe;
 
 private:
   PersistentImageToOGRDataFilter(const Self &); //purposely not implemented

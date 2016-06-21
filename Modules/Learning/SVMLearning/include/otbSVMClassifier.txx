@@ -104,7 +104,8 @@ void
 SVMClassifier<TSample, TLabel>
 ::DoClassification()
 {
-  itk::TimeProbe probe;
+  m_TimeProbe.Reset();
+  m_TimeProbe.Start();
 
   typename TSample::ConstIterator iter = this->GetInput()->Begin();
   typename TSample::ConstIterator end  = this->GetInput()->End();
@@ -143,6 +144,8 @@ SVMClassifier<TSample, TLabel>
     ++iter;
     ++iterO;
     }
+
+  m_TimeProbe.Stop();
 }
 
 } // end of namespace otb

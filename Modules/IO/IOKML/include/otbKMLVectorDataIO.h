@@ -26,6 +26,8 @@
 #include "kml/dom/kml_ptr.h"
 #include "otbVectorDataProjectionFilter.h"
 
+#include "itkTimeProbe.h"
+
 namespace kmldom
 {
 class KmlFactory;
@@ -131,6 +133,8 @@ protected:
   void ProcessNodeWrite(InternalTreeNodeType * source, kmldom::KmlFactory* factory,
                         kmldom::KmlPtr kml, kmldom::DocumentPtr currentDocument, kmldom::FolderPtr currentFolder,
                         kmldom::MultiGeometryPtr currentMultiGeometry);
+
+  itk::TimeProbe    m_TimeProbe;
 
 private:
   KMLVectorDataIO(const Self &); //purposely not implemented

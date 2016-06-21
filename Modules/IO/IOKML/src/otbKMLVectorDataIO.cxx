@@ -35,7 +35,6 @@
 #include "otbDataNode.h"
 #include "itkPreOrderTreeIterator.h"
 #include "otbMetaDataKey.h"
-#include "itkTimeProbe.h"
 
 
 namespace otb
@@ -522,8 +521,8 @@ bool KMLVectorDataIO::CanWriteFile(const char* filename) const
 
 void KMLVectorDataIO::Write(const itk::DataObject* datag, char ** itkNotUsed(papszOptions))
 {
-  itk::TimeProbe chrono;
-  chrono.Start();
+  m_TimeProbe.Reset();
+  m_TimeProbe.Start();
   // Retrieve data required for georeferencing
 
   VectorDataConstPointerType data_in = dynamic_cast<const VectorDataType*>(datag);
@@ -596,8 +595,8 @@ void KMLVectorDataIO::Write(const itk::DataObject* datag, char ** itkNotUsed(pap
   // Eventually print it
   //std::cout << xml;
 
-  chrono.Stop();
-  otbMsgDevMacro(<< "KMLVectorDataIO: file saved in " << chrono.GetMean() << " seconds. (" << m_Kept << " elements)" );
+  m_TimeProbe.Stop();
+  otbMsgDevMacro(<< "KMLVectorDataIO: file saved in " << m_TimeProbe.GetMean() << " seconds. (" << m_Kept << " elements)" );
   otbMsgDevMacro(<< " KMLVectorDataIO::Write()  ");
 
 }

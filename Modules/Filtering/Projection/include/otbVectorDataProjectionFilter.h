@@ -21,6 +21,7 @@
 #include "otbVectorDataToVectorDataFilter.h"
 #include "otbGenericRSTransform.h"
 #include "otbImageKeywordlist.h"
+#include "itkTimeProbe.h"
 
 namespace otb
 {
@@ -183,6 +184,8 @@ protected:
 
   virtual void GenerateOutputInformation(void);
   virtual void GenerateData(void);
+
+  itk::TimeProbe    m_TimeProbe;
 
 private:
   VectorDataProjectionFilter(const Self &); //purposely not implemented

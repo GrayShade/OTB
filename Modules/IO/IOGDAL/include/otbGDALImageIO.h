@@ -23,6 +23,8 @@
 #include <string>
 
 /* ITK Libraries */
+#include "itkTimeProbe.h"
+
 #include "otbImageIOBase.h"
 
 namespace otb
@@ -105,10 +107,10 @@ public:
   {
     return m_CreationOptions;
   }
-  
+
   /** Provide hist about the output container to deal with complex pixel
-   *  type */ 
-  virtual void SetOutputImagePixelType( bool isComplexInternalPixelType, 
+   *  type */
+  virtual void SetOutputImagePixelType( bool isComplexInternalPixelType,
                                         bool isVectorImage)
   {
     this->SetIsComplex(isComplexInternalPixelType);
@@ -164,9 +166,9 @@ public:
 
   /** Get Info about all resolution possible from the file dimensions  */
   bool GetResolutionInfo(std::vector<unsigned int>& res, std::vector<std::string>& desc);
-  
+
   /** Get number of available overviews in the file
-   *  Return 0 if no overviews available 
+   *  Return 0 if no overviews available
    *  Currently this overview count is only based on the first band
    *  If no pre-computed overviews are available we provide the overview
    *  count based on size division by 2*/
@@ -204,6 +206,9 @@ protected:
   /** Dataset index to extract (starting at 0)*/
   unsigned int m_DatasetNumber;
 
+  /** Used to measure operation timings */
+  itk::TimeProbe    m_TimeProbe;
+
 private:
   GDALImageIO(const Self &); //purposely not implemented
   void operator =(const Self&); //purposely not implemented
@@ -215,7 +220,7 @@ private:
 
   /** Parse a GML box from a Jpeg2000 file and get the origin */
   bool GetOriginFromGMLBox(std::vector<double> &origin);
-  
+
   /** Test whether m_CreationOptions has an option
    *  \param partialOption The beginning of a creation option (for example "QUALITY=")
    */

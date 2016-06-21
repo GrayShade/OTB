@@ -32,7 +32,6 @@
 
 #include "itkRGBPixel.h"
 #include "itkRGBAPixel.h"
-#include "itkTimeProbe.h"
 
 #include "cpl_conv.h"
 #include "ogr_spatialref.h"
@@ -403,8 +402,8 @@ void GDALImageIO::Read(void* buffer)
                    << " lineOffset = " << lineOffset << "\n"
                    << " bandOffset = " << bandOffset );
 
-    itk::TimeProbe chrono;
-    chrono.Start();
+    m_TimeProbe.Reset();
+    m_TimeProbe.Start();
     CPLErr lCrGdal = m_Dataset->GetDataSet()->RasterIO(GF_Read,
                                                        lFirstColumn,
                                                        lFirstLine,
@@ -420,8 +419,8 @@ void GDALImageIO::Read(void* buffer)
                                                        pixelOffset,
                                                        lineOffset,
                                                        bandOffset);
-    chrono.Stop();
-    otbMsgDevMacro(<< "RasterIO Read took " << chrono.GetTotal() << " sec")
+    m_TimeProbe.Stop();
+    otbMsgDevMacro(<< "RasterIO Read took " << m_TimeProbe.GetTotal() << " sec")
 
     // Check if gdal call succeed
     if (lCrGdal == CE_Failure)
@@ -487,9 +486,9 @@ void GDALImageIO::ReadImageInformation()
 }
 
 unsigned int GDALImageIO::GetOverviewsCount()
-{ 
+{
   GDALDataset* dataset = m_Dataset->GetDataSet();
- 
+
   // JPEG2000 case : use the number of overviews actually in the dataset
   if (m_Dataset->IsJPEG2000())
     {
@@ -523,23 +522,23 @@ std::vector<std::string> GDALImageIO::GetOverviewsInfo()
   unsigned lOverviewsCount = this->GetOverviewsCount();
   if ( lOverviewsCount == 0)
     return desc;
-    
+
   unsigned int originalWidth = m_OriginalDimensions[0];
-  unsigned int originalHeight = m_OriginalDimensions[1];  
- 
+  unsigned int originalHeight = m_OriginalDimensions[1];
+
   // Get the overview sizes
   for( unsigned int iOverview = 0; iOverview < lOverviewsCount; iOverview++ )
     {
     // For each resolution we will compute the tile dim and image dim
-    std::ostringstream oss;    
+    std::ostringstream oss;
     unsigned int w = uint_ceildivpow2( originalWidth, iOverview);
     unsigned int h = uint_ceildivpow2( originalHeight, iOverview);
-    
+
     oss << "Overview level: " << iOverview << " (Image [w x h]: " << w << "x" << h << ")";
-    
+
     desc.push_back(oss.str());
     }
-    
+
   return desc;
 }
 
@@ -548,7 +547,7 @@ void GDALImageIO::InternalReadImageInformation()
   itk::ExposeMetaData<unsigned int>(this->GetMetaDataDictionary(),
                                     MetaDataKey::ResolutionFactor,
                                     m_ResolutionFactor);
-                                    
+
   itk::ExposeMetaData<unsigned int>(this->GetMetaDataDictionary(),
                                     MetaDataKey::SubDatasetIndex,
                                     m_DatasetNumber);
@@ -1072,13 +1071,13 @@ void GDALImageIO::InternalReadImageInformation()
         {
         std::string key;
         int cptOffset = CSLCount(papszMetadata);
-        
+
         for (int cpt = 0; gmlMetadata[cpt] != NULL; ++cpt)
           {
           std::ostringstream lStream;
           lStream << MetaDataKey::MetadataKey << (cpt+cptOffset);
           key = lStream.str();
-          
+
           itk::EncapsulateMetaData<std::string>(dict, key,
                                                 static_cast<std::string>(gmlMetadata[cpt]));
           }
@@ -1296,8 +1295,8 @@ void GDALImageIO::Write(const void* buffer)
                  "\n, Line offset =" << m_BytePerPixel * m_NbBands * lNbColumns << // is pixelOffset * nbColumns
                  "\n, Band offset =" <<  m_BytePerPixel) //  is BytePerPixel
 
-                 itk::TimeProbe chrono;
-    chrono.Start();
+    m_TimeProbe.Reset();
+    m_TimeProbe.Start();
     CPLErr lCrGdal = m_Dataset->GetDataSet()->RasterIO(GF_Write,
                                                        lFirstColumn,
                                                        lFirstLine,
@@ -1318,8 +1317,8 @@ void GDALImageIO::Write(const void* buffer)
                                                        m_BytePerPixel * m_NbBands * lNbColumns,
                                                        // Band offset is BytePerPixel
                                                        m_BytePerPixel);
-    chrono.Stop();
-    otbMsgDevMacro(<< "RasterIO Write took " << chrono.GetTotal() << " sec")
+    m_TimeProbe.Stop();
+    otbMsgDevMacro(<< "RasterIO Write took " << m_TimeProbe.GetTotal() << " sec")
 
     // Check if writing succeed
     if (lCrGdal == CE_Failure)

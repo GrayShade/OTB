@@ -22,6 +22,8 @@
 
 #include "itkNumericTraits.h"
 
+#include <alloca.h>
+
 namespace otb
 {
 
@@ -71,14 +73,12 @@ double BCOInterpolateImageFunctionBase<TInputImage, TCoordRep>
 }
 
 template<class TInputImage, class TCoordRep>
-typename BCOInterpolateImageFunctionBase< TInputImage, TCoordRep >
-::CoefContainerType
+void
 BCOInterpolateImageFunctionBase<TInputImage, TCoordRep>
-::EvaluateCoef( const ContinuousIndexValueType & indexValue ) const
+::EvaluateCoef( const ContinuousIndexValueType & indexValue , CoefType * BCOCoef ) const
 {
   // Init BCO coefficient container
 
-  CoefContainerType BCOCoef(m_WinSize, 0.);
   double offset, dist, position, step;
 
   offset = indexValue - itk::Math::Floor<IndexValueType>(indexValue+0.5);
@@ -119,8 +119,6 @@ BCOInterpolateImageFunctionBase<TInputImage, TCoordRep>
 
   for ( unsigned int i = 0; i < m_WinSize; ++i)
     BCOCoef[i] = BCOCoef[i] / sum;
-
-  return BCOCoef;
 }
 
 template <class TInputImage, class TCoordRep>
@@ -142,12 +140,15 @@ BCOInterpolateImageFunction<TInputImage, TCoordRep>
   IndexType baseIndex;
   IndexType neighIndex;
 
-  std::vector<RealType> lineRes(this->m_WinSize, 0.);
+  RealType * lineRes = static_cast< CoefType * >( alloca( this->m_WinSize * sizeof( CoefType ) ) );
+  std::fill( lineRes, lineRes + this->m_WinSize, 0. );
 
   RealType value = itk::NumericTraits<RealType>::Zero;
 
-  CoefContainerType BCOCoefX = this->EvaluateCoef(index[0]);
-  CoefContainerType BCOCoefY = this->EvaluateCoef(index[1]);
+  CoefType * BCOCoefX = static_cast< CoefType * >( alloca( this->m_WinSize * sizeof( CoefType ) ) );
+  CoefType * BCOCoefY = static_cast< CoefType * >( alloca( this->m_WinSize * sizeof( CoefType ) ) );
+  this->EvaluateCoef( index[0], BCOCoefX );
+  this->EvaluateCoef( index[1], BCOCoefY );
 
   // Compute base index = closet index
   for( dim = 0; dim < ImageDimension; dim++ )
@@ -220,8 +221,10 @@ BCOInterpolateImageFunction< otb::VectorImage<TPixel, VImageDimension> , TCoordR
 
   output.SetSize(componentNumber);
 
-  CoefContainerType BCOCoefX = this->EvaluateCoef(index[0]);
-  CoefContainerType BCOCoefY = this->EvaluateCoef(index[1]);
+  CoefType * BCOCoefX = static_cast< CoefType * >( alloca( this->m_WinSize * sizeof( CoefType ) ) );
+  CoefType * BCOCoefY = static_cast< CoefType * >( alloca( this->m_WinSize * sizeof( CoefType ) ) );
+  this->EvaluateCoef( index[0], BCOCoefX );
+  this->EvaluateCoef( index[0], BCOCoefY );
 
   //Compute base index = closet index
   for( dim = 0; dim < ImageDimension; dim++ )

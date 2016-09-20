@@ -87,8 +87,8 @@ public:
   typedef typename Superclass::ContinuousIndexType ContinuousIndexType;
   typedef TCoordRep                                ContinuousIndexValueType;
 
-  /** Coeficients container type.*/
-  typedef vnl_vector<double> CoefContainerType;
+  /** Coeficients type.*/
+  typedef double CoefType;
 
   /** Set/Get the window radius */
   virtual void SetRadius(unsigned int radius);
@@ -113,7 +113,7 @@ protected:
   virtual ~BCOInterpolateImageFunctionBase() {};
   void PrintSelf(std::ostream& os, itk::Indent indent) const;
   /** Compute the BCO coefficients. */
-  virtual CoefContainerType EvaluateCoef( const ContinuousIndexValueType & indexValue ) const;
+  void EvaluateCoef( const ContinuousIndexValueType & indexValue, CoefType * BCOCoef ) const;
   
     /** Used radius for the BCO */
   unsigned int           m_Radius;
@@ -136,7 +136,7 @@ class ITK_EXPORT BCOInterpolateImageFunction :
 public:
   /** Standard class typedefs. */
   typedef BCOInterpolateImageFunction                              Self;
-  typedef BCOInterpolateImageFunctionBase<TInputImage, TCoordRep>   Superclass;
+  typedef BCOInterpolateImageFunctionBase<TInputImage, TCoordRep>  Superclass;
   typedef itk::SmartPointer<Self>                                  Pointer;
   typedef itk::SmartPointer<const Self>                            ConstPointer;
 
@@ -152,7 +152,7 @@ public:
   typedef typename Superclass::IndexValueType        IndexValueType;
   typedef typename Superclass::PointType             PointType;
   typedef typename Superclass::ContinuousIndexType   ContinuousIndexType;
-  typedef typename Superclass::CoefContainerType     CoefContainerType;
+  typedef typename Superclass::CoefType              CoefType;
 
   virtual OutputType EvaluateAtContinuousIndex( const ContinuousIndexType & index ) const;
 
@@ -191,7 +191,7 @@ public:
   typedef typename Superclass::IndexValueType        IndexValueType;
   typedef typename Superclass::PointType             PointType;
   typedef typename Superclass::ContinuousIndexType   ContinuousIndexType;
-  typedef typename Superclass::CoefContainerType     CoefContainerType;
+  typedef typename Superclass::CoefType              CoefType;
 
   virtual OutputType EvaluateAtContinuousIndex( const ContinuousIndexType & index ) const;
 

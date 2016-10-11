@@ -67,7 +67,7 @@ ExtendedFilenameHelper
 }
 
 
-ExtendedFilenameHelper::OptionMapType
+const ExtendedFilenameHelper::OptionMapType &
 ExtendedFilenameHelper
 ::GetOptionMap(void) const
 {

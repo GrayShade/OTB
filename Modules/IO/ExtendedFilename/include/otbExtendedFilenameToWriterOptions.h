@@ -39,19 +39,19 @@ namespace otb
  * \ingroup OTBExtendedFilename
  */
 
-class ITK_EXPORT ExtendedFilenameToWriterOptions : public itk::Object
+class ITK_EXPORT ExtendedFilenameToWriterOptions : public ExtendedFilenameHelper
 {
 public:
 /** Standard class typedefs. */
   typedef ExtendedFilenameToWriterOptions        Self;
   typedef itk::SmartPointer<Self>                Pointer;
   typedef itk::SmartPointer<const Self>          ConstPointer;
-  typedef itk::Object                            Superclass;
+  typedef ExtendedFilenameHelper                 Superclass;
 
-  itkTypeMacro(ExtendedFilenameToWriterOptions, itk::Object);
+  itkTypeMacro(ExtendedFilenameToWriterOptions, otb::ExtendedFilenameHelper);
   itkNewMacro(Self);
 
-  typedef ExtendedFilenameHelper                    FNameHelperType;
+  typedef Superclass                                FNameHelperType;
   typedef FNameHelperType::OptionMapType            MapType;
   typedef MapType::iterator                         MapIteratorType;
 
@@ -72,10 +72,9 @@ public:
   };
 
   /* Set Methods */
-  void SetExtendedFileName(const char * extFname);
+  virtual void SetExtendedFileName(const char * extFname);
   /* Get Methods */
   bool SimpleFileNameIsSet () const;
-  const char* GetSimpleFileName () const;
   bool WriteGEOMFileIsSet () const;
   bool GetWriteGEOMFile () const;
   bool gdalCreationOptionsIsSet () const;
@@ -99,7 +98,6 @@ private:
   ExtendedFilenameToWriterOptions(const Self &);  //purposely not implemented
   void operator =(const Self&);  //purposely not implemented
 
-  FNameHelperType::Pointer m_FilenameHelper;
   OptionType               m_Options;
 
 };

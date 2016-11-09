@@ -316,7 +316,7 @@ ImageFileReader<TOutputImage, ConvertPixelTraits>
   bool lVectorImage = false;
   if (strcmp(output->GetNameOfClass(), "VectorImage") == 0)
     lVectorImage= true;
-  
+
   this->m_ImageIO->SetOutputImagePixelType(PixelIsComplex(dummy),lVectorImage);
 
   // Pass the dataset number (used for hdf files for example)
@@ -529,6 +529,8 @@ void
 ImageFileReader<TOutputImage, ConvertPixelTraits>
 ::TestFileExistanceAndReadability()
 {
+  return;
+  /*
   // Test if the file a server name : if so the test is skipped
   if (this->m_FileName.find(std::string("http://")) == 0 ||
       this->m_FileName.find(std::string("https://")) == 0)
@@ -569,6 +571,7 @@ ImageFileReader<TOutputImage, ConvertPixelTraits>
       }
     readTester.close();
     }
+  */
 }
 
 template <class TOutputImage, class ConvertPixelTraits>
@@ -670,15 +673,15 @@ ImageFileReader<TOutputImage, ConvertPixelTraits>
 
   return this->m_ImageIO->GetOverviewsCount();
  }
- 
- 
+
+
 template <class TOutputImage, class ConvertPixelTraits>
 std::vector<std::string>
 ImageFileReader<TOutputImage, ConvertPixelTraits>
 ::GetOverviewsInfo()
  {
   this->UpdateOutputInformation();
-  
+
   return this->m_ImageIO->GetOverviewsInfo();
  }
 

@@ -210,7 +210,8 @@ BCOInterpolateImageFunction< otb::VectorImage<TPixel, VImageDimension> , TCoordR
   IndexType neighIndex;
 
 
-  std::vector<ScalarRealType> lineRes(componentNumber);
+  ScalarRealType * lineRes = static_cast< ScalarRealType * >( alloca(componentNumber * sizeof( ScalarRealType ) ) );
+
   OutputType output(componentNumber);
   output.Fill(itk::NumericTraits<ScalarRealType>::Zero);
 
@@ -227,7 +228,7 @@ BCOInterpolateImageFunction< otb::VectorImage<TPixel, VImageDimension> , TCoordR
 
   for(unsigned int i = 0; i < this->m_WinSize; ++i )
     {
-    std::fill(lineRes.begin(), lineRes.end(), itk::NumericTraits<ScalarRealType>::Zero);
+    std::fill(&lineRes[0], &lineRes[componentNumber], itk::NumericTraits<ScalarRealType>::Zero);
     for(unsigned int j = 0; j < this->m_WinSize; ++j )
       {
       // get neighbor index

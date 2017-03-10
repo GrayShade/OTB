@@ -172,6 +172,7 @@ else()
       -DITK_USE_SYSTEM_PNG:BOOL=ON
       ${ITK_SB_CONFIG}
     DEPENDS ${${proj}_DEPENDENCIES}
+    PATCH_COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/patches/ITK ${ITK_SB_SRC}
     CMAKE_COMMAND ${SB_CMAKE_COMMAND}
     )
 
@@ -180,7 +181,7 @@ else()
   #  "configure_file(${CMAKE_SOURCE_DIR}/patches_ITK/hashtable.hxx.in
   #   ${ITK_SB_SRC}/Modules/ThirdParty/KWSys/src/KWSys/hashtable.hxx.in COPYONLY)")
 
-  set(_SB_ITK_DIR ${SB_INSTALL_PREFIX}/lib/cmake/ITK-4.6)
+  set(_SB_ITK_DIR ${SB_INSTALL_PREFIX}/lib/cmake/ITK-4.11)
 
 endif()
 endif()

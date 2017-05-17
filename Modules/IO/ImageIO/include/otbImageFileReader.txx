@@ -121,9 +121,9 @@ ImageFileReader<TOutputImage, ConvertPixelTraits>
   output->SetBufferedRegion(output->GetRequestedRegion());
   output->Allocate();
 
-  // Test if the file exist and if it can be open.
-  // An exception will be thrown otherwise.
-  this->TestFileExistanceAndReadability();
+  // Raise an exception if the file could not be opened
+  // i.e. if this->m_ImageIO is Null
+  this->TestValidImageIO();
 
   // Tell the ImageIO to read the file
   OutputImagePixelType *buffer =
@@ -260,51 +260,14 @@ ImageFileReader<TOutputImage, ConvertPixelTraits>
   // Update FileName
   this->m_FileName = lFileName;
 
-  // Test if the file exists and if it can be opened.
-  // An exception will be thrown otherwise.
-  // We catch the exception because some ImageIO's may not actually
-  // open a file. Still reports file error if no ImageIO is loaded.
-  
-  try
-    {
-    m_ExceptionMessage = "";
-    this->TestFileExistanceAndReadability();
-    }
-  catch (itk::ExceptionObject & err)
-    {
-    m_ExceptionMessage = err.GetDescription();
-    }
-  
   if (this->m_UserSpecifiedImageIO == false)   //try creating via factory
     {
     this->m_ImageIO = ImageIOFactory::CreateImageIO(this->m_FileName.c_str(), otb::ImageIOFactory::ReadMode);
     }
   
-  if (this->m_ImageIO.IsNull())
-    {
-    this->Print(std::cerr);
-    otb::ImageFileReaderException e(__FILE__, __LINE__);
-    std::ostringstream msg;
-    msg << " Could not create IO object for file "
-        << this->m_FileName.c_str() << std::endl;
-    msg << "  Tried to create one of the following:" << std::endl;
-    std::list<itk::LightObject::Pointer> allobjects =
-      itk::ObjectFactoryBase::CreateAllInstance("otbImageIOBase");
-    for (std::list<itk::LightObject::Pointer>::iterator i = allobjects.begin();
-         i != allobjects.end(); ++i)
-      {
-      otb::ImageIOBase* io = dynamic_cast<otb::ImageIOBase*>(i->GetPointer());
-      // IO should never be null, but we would better check for it
-      if(io)
-        msg << "    " << io->GetNameOfClass() << std::endl;
-      }
-    msg << "  You probably failed to set a file suffix, or" << std::endl;
-    msg << "    set the suffix to an unsupported type." << std::endl;
-    e.SetDescription(msg.str().c_str());
-    throw e;
-    return;
-    }
-
+  // Raise an exception if the file could not be opened
+  // i.e. if this->m_ImageIO is Null
+  this->TestValidImageIO();
 
   // Get the ImageIO MetaData Dictionary
   itk::MetaDataDictionary& dict = this->m_ImageIO->GetMetaDataDictionary();
@@ -546,51 +509,22 @@ ImageFileReader<TOutputImage, ConvertPixelTraits>
 template <class TOutputImage, class ConvertPixelTraits>
 void
 ImageFileReader<TOutputImage, ConvertPixelTraits>
-::TestFileExistanceAndReadability()
+::TestValidImageIO()
 {
-  return;
-  /*
-  // Test if the file a server name : if so the test is skipped
-  if (this->m_FileName.find(std::string("http://")) == 0 ||
-      this->m_FileName.find(std::string("https://")) == 0)
-    {
-    return;
-    }
+  if (this->m_ImageIO.IsNull())
+  {
+    std::string fileToCheck = GetDerivedDatasetSourceFileName(m_FileName);
 
-  // Test if the file exists.
-  if (!itksys::SystemTools::FileExists(this->m_FileName.c_str()))
+    // Test if the file exists.
+    if (!itksys::SystemTools::FileExists(fileToCheck.c_str()))
     {
-    otb::ImageFileReaderException e(__FILE__, __LINE__);
-    std::ostringstream msg;
-    msg << "The file doesn't exist. "
-        << std::endl << "Filename = " << this->m_FileName
-        << std::endl;
-    e.SetDescription(msg.str().c_str());
-    throw e;
-    return;
+      throw otb::ImageFileReaderException (__FILE__, __LINE__, "The file does not exist.", fileToCheck);
     }
-
-  // Test if the file can be open for reading access.
-  //Only if m_FileName specify a filename (not a dirname)
-  if (itksys::SystemTools::FileExists(this->m_FileName.c_str(), true) == true)
+    else
     {
-    std::ifstream readTester;
-    readTester.open(this->m_FileName.c_str());
-    if (readTester.fail())
-      {
-      readTester.close();
-      std::ostringstream msg;
-      msg << "The file couldn't be opened for reading. "
-          << std::endl << "Filename: " << this->m_FileName
-          << std::endl;
-      otb::ImageFileReaderException e(__FILE__, __LINE__, msg.str().c_str(), ITK_LOCATION);
-      throw e;
-      return;
-
-      }
-    readTester.close();
+      throw otb::ImageFileReaderException(__FILE__, __LINE__, "Cannot read image (probably unsupported or incorrect filename extension).", this->m_FileName);
     }
-  */
+  }
 }
 
 template <class TOutputImage, class ConvertPixelTraits>

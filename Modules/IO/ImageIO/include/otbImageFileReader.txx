@@ -386,7 +386,7 @@ ImageFileReader<TOutputImage, ConvertPixelTraits>
   if(!m_KeywordListUpToDate && !m_FilenameHelper->GetSkipGeom())
     {
     
-    std::string lFileNameOssimKeywordlist = GetDerivedDatasetSourceFileName(m_FileName);
+    std::string lFileNameOssimKeywordlist = this->m_FileName;
   
     // Update otb Keywordlist
     ImageKeywordlist otb_kwl;
@@ -402,7 +402,7 @@ ImageFileReader<TOutputImage, ConvertPixelTraits>
       }
     
     // Don't add an empty ossim keyword list
-    if(!otb_kwl.Empty())
+    if(otb_kwl.GetSize())
       {
       itk::EncapsulateMetaData<ImageKeywordlist>(dict,
                                                  MetaDataKey::OSSIMKeywordlistKey, otb_kwl);
@@ -513,16 +513,16 @@ ImageFileReader<TOutputImage, ConvertPixelTraits>
 {
   if (this->m_ImageIO.IsNull())
   {
-    std::string fileToCheck = GetDerivedDatasetSourceFileName(m_FileName);
+    std::string fileToCheck = this->m_FileName;
 
     // Test if the file exists.
     if (!itksys::SystemTools::FileExists(fileToCheck.c_str()))
     {
-      throw otb::ImageFileReaderException (__FILE__, __LINE__, "The file does not exist.", fileToCheck);
+      throw otb::ImageFileReaderException (__FILE__, __LINE__, "The file does not exist.", fileToCheck.c_str());
     }
     else
     {
-      throw otb::ImageFileReaderException(__FILE__, __LINE__, "Cannot read image (probably unsupported or incorrect filename extension).", this->m_FileName);
+      throw otb::ImageFileReaderException(__FILE__, __LINE__, "Cannot read image (probably unsupported or incorrect filename extension).", this->m_FileName.c_str());
     }
   }
 }
